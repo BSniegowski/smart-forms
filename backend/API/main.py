@@ -1,38 +1,77 @@
-from fastapi import FastAPI, Body, Request
+from fastapi import FastAPI, Body, Request, Query, HTTPException
 from fastapi.responses import JSONResponse
-
+from pydantic import ValidationError, EmailStr
+from backend.models.machine import MachineCreate, MachineRead, MachineUpdate
 
 app = FastAPI()
 
 
 @app.get("/")
 def root():
-    return {"message": "Hello, FastAPI!"}
+    print("Home accessed")
+    return {"message": "home"}
 
 
 @app.post('/machine/create')
-def create(data: dict = Body(...)):
-    return JSONResponse(content={"received": data}, status_code=201)
+# def create_machine(data: dict = Body(..., description="Request body is required")):
+def create_machine(machine: MachineCreate):
+    # try:
+    #     MachineCreate.model_validate(data)
+    # except ValidationError as e:
+    #     return JSONResponse(content={"Error message": e.errors()}, status_code=400)
+
+    return {"message": "Machine created successfully"}
 
 
-@app.get('/machine/get')
-def get(request: Request):
-    id = request.query_params.get('id')
-    email = request.query_params.get('email')
-    return JSONResponse(content={"received": {"id": id, "email": email}}, status_code=200)
+@app.get("/machine/get")
+def get_machine(id: int = Query(None, description="The id of the machine to retrieve"),
+                email: EmailStr = Query(None, description="The email of the machine to retrieve")):
+    try:
+        if id != 0 or email != "user@example.com":
+            print("Raising")
+            raise RuntimeError
+    except RuntimeError as e:
+        raise HTTPException(detail="Machine with specified id and email not found", status_code=400)
+
+    # content received from database
+    machines = [
+        {
+            "name": "string",
+            "location": "string",
+            "email": "user@example.com",
+            "number": 0,
+            "float_number": 0,
+            "enum": "active",
+            "id": 0,
+            "created_at": "2023-07-19T12:17:08.063Z",
+            "edited_at": "2023-07-19T12:17:08.063Z"
+        }
+    ]
+    try:
+        for machine in machines:
+            MachineRead.model_validate(machine)
+    except ValidationError as e:
+        raise HTTPException(detail=f'Received invalid data from database. {e.errors()}', status_code=500)
+
+    return machines
 
 
 @app.put('/machine/update')
-def update(request: Request):
-    machine_id = request.query_params.get('machine_id')
-    request_body = request.body()
-    return JSONResponse(content={"request_body": request_body, "machine_id": machine_id}, status_code=201)
+def update_machine(machine_id: int = Query(..., description="The id of the machine to update"),
+                   machine: MachineUpdate = Body(...)):
+    return {"message": "Machine updated successfully"}
 
 
 @app.get('/machine/schema/{method}')
-def return_schema(method: str):
-    assert method in ['update, create']  # maybe abstract this list out to a config file
-    return JSONResponse(content={"field1": "value1", "field2": "value2"})
+def get_machine_schema(method: str):
+    if method == "create":
+        schema = MachineCreate.schema()
+    elif method == "update":
+        schema = MachineUpdate.schema()
+    else:
+        return {"message": "Invalid method"}
+
+    return schema
 
 
 if __name__ == "__main__":

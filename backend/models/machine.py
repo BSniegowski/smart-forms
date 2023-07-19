@@ -9,46 +9,24 @@ class MachineStatus(str, Enum):
     not_active = "not_active"
 
 
-class Machine(BaseModel):
-    id: int = Field(default_factory=lambda: next(count(start=1)), alias="_id")
+class MachineBase(BaseModel):
     name: constr(max_length=10)
     location: str
     email: EmailStr
     number: int
     float_number: float
     enum: MachineStatus
-    created_at: datetime = datetime.now()
-    edited_at: datetime
+
+
+class MachineCreate(MachineBase):
     password: str
 
 
-class MachineCreate(BaseModel):
-    name: constr(max_length=10)
-    location: str
-    email: EmailStr
-    number: int
-    float_number: float
-    enum: MachineStatus
+class MachineUpdate(MachineBase):
     password: str
 
 
-class MachineUpdate(BaseModel):
-    name: constr(max_length=10)
-    location: str
-    email: EmailStr
-    number: int
-    float_number: float
-    enum: MachineStatus
-    password: str
-
-
-class MachineRead(BaseModel):
-    id: int = Field(default_factory=lambda: next(count(start=1)), alias="_id")
-    name: constr(max_length=10)
-    location: str
-    email: EmailStr
-    number: int
-    float_number: float
-    enum: MachineStatus
-    created_at: datetime = datetime.now()
+class MachineRead(MachineBase):
+    id: int
+    created_at: datetime
     edited_at: datetime
