@@ -1,6 +1,6 @@
 Already implemented
 - [x] SQLModel and Pydantic models
-- [x] API satisfying [OpenAPI.yaml](OpenAPI.yaml) specification
+- [x] API satisfying [OpenAPI.yaml](../OpenAPI.yaml) specification
 - [x] Connection with database
 
 To initialize database run
@@ -12,6 +12,12 @@ python initialize.py
 To solve `ModuleNotFoundError: No module named 'backend'` run in the root directory
 ```
 export PYTHONPATH=$(pwd)
+```
+
+To run the server
+```
+cd backend/API
+uvicorn main:app --reload
 ```
 
 
