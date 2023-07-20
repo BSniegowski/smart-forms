@@ -1,14 +1,29 @@
 import datetime
 import sqlalchemy.exc
-import json
-import jsonref
-from fastapi import FastAPI, Body, Request, Query, HTTPException
+from fastapi import FastAPI, Body, Query, HTTPException
 from pydantic import ValidationError, EmailStr
-from backend.models.machine import MachineCreate, MachineRead, MachineUpdate, MachineStatus
+from backend.models.machine import MachineCreate, MachineRead, MachineUpdate
 from sqlmodel import Session, create_engine, select
 from backend.models.machineTable import Machine
+from fastapi.middleware.cors import CORSMiddleware
+import json
+import jsonref
+
 
 app = FastAPI()
+
+origins = [
+    "http://localhost",
+    "http://localhost:5173",
+]
+
+app.add_middleware(
+    CORSMiddleware,
+    allow_origins=origins,
+    allow_credentials=True,
+    allow_methods=["*"],
+    allow_headers=["*"],
+)
 
 engine = create_engine("sqlite:///../database/database.db")
 
@@ -21,7 +36,6 @@ def shutdown_event():
 
 @app.get("/")
 def root():
-    print("Home accessed")
     return {"message": "home"}
 
 
@@ -44,7 +58,6 @@ def get_machine(id: int = None,
                 email: EmailStr = None):
     # assuming conjunction of constraints is desired
     # returning all machines in case both id and email are not provided
-    print(id, email)
     try:
         with Session(engine) as session:
             query = select(Machine)
@@ -56,7 +69,6 @@ def get_machine(id: int = None,
     except sqlalchemy.exc.SQLAlchemyError as e:
         raise HTTPException(detail=e.args, status_code=500)
     try:
-        print(results)
         results = [MachineRead.from_orm(result) for result in results]
     except ValidationError as e:
         raise HTTPException(detail=e.errors(), status_code=500)
@@ -98,7 +110,7 @@ def get_machine_schema(method: str):
     else:
         return {"message": "Invalid method"}
 
-    return schema
+    return jsonref.JsonRef.replace_refs(schema)
 
 
 if __name__ == "__main__":

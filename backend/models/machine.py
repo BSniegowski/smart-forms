@@ -17,6 +17,9 @@ class MachineBase(BaseModel):
     float_number: float
     enum: MachineStatus
 
+    class Config:
+        orm_mode = True
+
 
 class MachineCreate(MachineBase):
     password: str
