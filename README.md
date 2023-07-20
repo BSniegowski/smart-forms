@@ -15,7 +15,7 @@ export PYTHONPATH=$(pwd)
 ```
 
 
-At the time of creating FastAPI does not support Pydantic v2, hence the use of v1.10.11
+At the time of creating SQLModel does not support Pydantic v2, hence the use of v1.10.11
 
 Things to improve:
 - [ ] More specific error handling
