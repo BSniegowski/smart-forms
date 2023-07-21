@@ -82,19 +82,18 @@ function DataTable(props: { dataType: string }) {
           <TableHead>
             <TableRow>
               {/*using first row to determine attributes*/}
-              {Object.keys(responseData[0]).map((attribute: string) => <StyledTableCell>{attribute}</StyledTableCell>)}
+              {Object.keys(responseData[0]).map((attribute: string) => <StyledTableCell key={attribute}>{attribute}</StyledTableCell>)}
               <StyledTableCell>Edit</StyledTableCell>
             </TableRow>
           </TableHead>
           <TableBody>
             {responseData.map((row) => {
-              // @ts-ignore
-              let id: bigint = row.id
               return (
                 <StyledTableRow>
                   {Object.values(row).map((value: string | number) => <StyledTableCell>{value}</StyledTableCell>)}
                   <StyledTableCell>
-                    <IconButton onClick={() => handleClickEdit(id)}>
+                    {/*@ts-ignore*/}
+                    <IconButton onClick={() => handleClickEdit(row.id as bigint)}>
                       <EditIcon/>
                     </IconButton>
                   </StyledTableCell>
