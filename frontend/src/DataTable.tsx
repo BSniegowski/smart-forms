@@ -1,10 +1,8 @@
 import './App.css'
 import {useEffect, useState} from "react";
 import {BACKEND_BASE_URL} from "./config.ts";
-import {styled} from '@mui/material/styles';
 import Table from '@mui/material/Table';
 import TableBody from '@mui/material/TableBody';
-import TableCell, {tableCellClasses} from '@mui/material/TableCell';
 import TableContainer from '@mui/material/TableContainer';
 import TableHead from '@mui/material/TableHead';
 import TableRow from '@mui/material/TableRow';
@@ -14,38 +12,22 @@ import EditIcon from '@mui/icons-material/Edit';
 import AddIcon from '@mui/icons-material/Add';
 import IconButton from '@mui/material/IconButton'
 import {SmartFormComponent} from "./SmartFormComponent.tsx";
+import {StyledTableCell, StyledTableRow} from "./utils.ts";
 
-const StyledTableCell = styled(TableCell)(({theme}) => ({
-  [`&.${tableCellClasses.head}`]: {
-    backgroundColor: theme.palette.common.black,
-    color: theme.palette.common.white,
-  },
-  [`&.${tableCellClasses.body}`]: {
-    fontSize: 14,
-  },
-}));
-
-const StyledTableRow = styled(TableRow)(({theme}) => ({
-  '&:nth-of-type(odd)': {
-    backgroundColor: theme.palette.action.hover,
-  },
-  // hide last border
-  '&:last-child td, &:last-child th': {
-    border: 0,
-  },
-}));
 
 function DataTable(props: { dataType: string }) {
   const [loading, setLoading] = useState<boolean>(true)
-  const [responseData, setResponseData] = useState<object[]>([{}])
+  const [tableData, setTableData] = useState<object[]>([{}])
   const [editId, setEditId] = useState<bigint>()
+  const [dialogOpen, setDialogOpen] = useState<boolean>(false)
+  const [formType, setFormType] = useState<string>('')
+  const [rawData, setRawData] = useState()
 
   useEffect(() => {
     fetch(`${BACKEND_BASE_URL}/${props.dataType}/get`)
       .then(response => response.json())
       .then(data => {
-        console.log(data)
-        setResponseData(data)
+        setTableData(data)
         setLoading(false)
       })
       .catch(error => {
@@ -54,13 +36,16 @@ function DataTable(props: { dataType: string }) {
       });
   }, []);
 
-  const [dialogOpen, setDialogOpen] = useState<boolean>(false)
-  const [formType, setFormType] = useState<string>('')
+
   const handleClickAdd = () => {
     setFormType('create')
     setDialogOpen(true)
   }
-  const handleClickEdit = (id: bigint) => {
+  const handleClickEdit = async (id: bigint) => {
+    const getUpdateDataUrl: string = `${BACKEND_BASE_URL}/${props.dataType}/get?id=${id}`
+    const updateResponse = await fetch(getUpdateDataUrl);
+    const dataToUpdate = await updateResponse.json();
+    setRawData(dataToUpdate[0])
     setEditId(id)
     setFormType('update')
     setDialogOpen(true)
@@ -72,22 +57,29 @@ function DataTable(props: { dataType: string }) {
     <AddIcon/>
   </IconButton>)
 
-  return !responseData ? (<AddInstanceButton/>) : (
+  return !tableData ? (<AddInstanceButton/>) : (
     <div>
-      {!dialogOpen ? null : <SmartFormComponent
-        updateId={editId} open={dialogOpen} formType={formType} topic={props.dataType} onClose={() => setDialogOpen(false)}
-      />}
+      {!dialogOpen ? null :
+        <SmartFormComponent
+          updateId={editId}
+          open={dialogOpen}
+          formType={formType}
+          topic={props.dataType}
+          onClose={() => setDialogOpen(false)}
+          rawData={rawData}
+        />}
       <TableContainer component={Paper}>
         <Table sx={{minWidth: 700}} aria-label="customized table">
           <TableHead>
             <TableRow>
               {/*using first row to determine attributes*/}
-              {Object.keys(responseData[0]).map((attribute: string) => <StyledTableCell key={attribute}>{attribute}</StyledTableCell>)}
+              {Object.keys(tableData[0]).map((attribute: string) =>
+                <StyledTableCell key={attribute}>{attribute}</StyledTableCell>)}
               <StyledTableCell>Edit</StyledTableCell>
             </TableRow>
           </TableHead>
           <TableBody>
-            {responseData.map((row) => {
+            {tableData.map((row) => {
               return (
                 <StyledTableRow>
                   {Object.values(row).map((value: string | number) => <StyledTableCell>{value}</StyledTableCell>)}
