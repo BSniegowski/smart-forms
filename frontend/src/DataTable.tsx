@@ -75,7 +75,7 @@ function DataTable(props: { dataType: string }) {
   return !responseData ? (<AddInstanceButton/>) : (
     <div>
       {!dialogOpen ? null : <SmartFormComponent
-        editId={editId} open={dialogOpen} formType={formType} topic={props.dataType} onClose={() => setDialogOpen(false)}
+        updateId={editId} open={dialogOpen} formType={formType} topic={props.dataType} onClose={() => setDialogOpen(false)}
       />}
       <TableContainer component={Paper}>
         <Table sx={{minWidth: 700}} aria-label="customized table">
