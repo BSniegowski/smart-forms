@@ -1,7 +1,6 @@
 from sqlmodel import SQLModel, Field
 from datetime import datetime
 from backend.models.machine import MachineStatus
-from typing import Optional
 
 
 class Machine(SQLModel, table=True):
