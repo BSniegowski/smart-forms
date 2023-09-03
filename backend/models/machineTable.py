@@ -14,3 +14,4 @@ class Machine(SQLModel, table=True):
     created_at: datetime = Field(default_factory=datetime.now)
     edited_at: datetime = Field(default_factory=datetime.now)
     password: str
+
