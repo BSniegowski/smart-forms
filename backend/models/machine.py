@@ -3,6 +3,11 @@ from datetime import datetime
 from enum import Enum
 
 
+class Method(Enum):
+    CREATE = "create"
+    UPDATED = "update"
+
+
 class MachineStatus(str, Enum):
     active = "active"
     not_active = "not_active"
