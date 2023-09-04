@@ -1,12 +1,11 @@
 import datetime
 import sqlalchemy.exc
-from fastapi import FastAPI, Body, Query, HTTPException
+from fastapi import FastAPI, Body, Query, HTTPException, Response
 from pydantic import ValidationError, EmailStr
 from backend.models.machine import MachineCreate, MachineRead, MachineUpdate
 from sqlmodel import Session, create_engine, select
 from backend.models.machineTable import Machine
 from fastapi.middleware.cors import CORSMiddleware
-import json
 import jsonref
 
 
@@ -100,7 +99,7 @@ def update_machine(machine_id: int = Query(..., description="The id of the machi
 
 
 @app.get('/machine/schema/{method}')
-def get_machine_schema(method: str):
+def get_machine_schema(method: str, response: Response):
     # to be updated when using Pydantic v2 (currently incompatible with SQLModel)
     # jsonref.replace_refs() can be used to resolve MachineStatus
     if method == "create":
@@ -108,6 +107,7 @@ def get_machine_schema(method: str):
     elif method == "update":
         schema = MachineUpdate.schema()
     else:
+        response.status_code = 400
         return {"message": "Invalid method"}
 
     return jsonref.JsonRef.replace_refs(schema)
