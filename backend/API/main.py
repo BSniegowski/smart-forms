@@ -101,12 +101,12 @@ def update_machine(machine_id: int = Query(..., description="The id of the machi
 def get_machine_schema(method: Method):
     # to be updated when using Pydantic v2 (currently incompatible with SQLModel)
     # jsonref.replace_refs() can be used to resolve MachineStatus
-    if method == "create":
+    if method == Method.CREATE:
         schema = MachineCreate.schema()
-    elif method == "update":
+    elif method == Method.UPDATE:
         schema = MachineUpdate.schema()
     else:
-        raise HTTPException(status_code=400, detail={"message": "Invalid method"})
+        raise HTTPException(status_code=422, detail="Invalid method")
 
     return jsonref.JsonRef.replace_refs(schema)
 

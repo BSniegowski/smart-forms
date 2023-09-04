@@ -5,7 +5,7 @@ from enum import Enum
 
 class Method(Enum):
     CREATE = "create"
-    UPDATED = "update"
+    UPDATE = "update"
 
 
 class MachineStatus(str, Enum):

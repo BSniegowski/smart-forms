@@ -116,8 +116,7 @@ def test_get_machine_schema(mock_engine, mock_session, test_client):
 
     method = "invalid_method"
     response = test_client.get(f"/machine/schema/{method}")
-    assert response.status_code == 400
-    assert response.json() == {"message": "Invalid method"}
+    assert response.status_code == 422
 
     # Verify that the session was not used in this test (since it's not related to schema retrieval)
     mock_session_instance.commit.assert_not_called()
