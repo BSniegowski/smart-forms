@@ -1,0 +1,54 @@
+version: '3.8'
+
+services:
+  database:
+    image: postgres:latest
+    environment:
+      POSTGRES_DB: smart-forms
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: postgres
+    ports:
+      - "5432:5432"
+    networks:
+      - app-network
+
+  backend:
+    environment:
+      - DATABASE_URL=postgresql://postgres:postgres@database:5432/smart-forms
+    build:
+#      dockerfile: Dockerfile
+      context: ./backend
+    command: uvicorn backend.API.main:app --host 0.0.0.0 --port 8000
+#    command: ["sh", "-c", "while true; do sleep 3600; done"]
+#    volumes:
+#      - ./backend:/app  # Mount the backend directory into the container
+    ports:
+      - "8000:8000"
+    depends_on:
+      - database
+    networks:
+      - app-network
+
+
+
+  frontend:
+    build:
+      context: ./frontend  # Path to your frontend directory
+      dockerfile: Dockerfile
+    environment:
+      - BACKEND_BASE_URL=http://backend:8000
+    command: npm run dev
+#      - npm install
+#    volumes:
+#      - ../frontend:/app  # Mount the frontend directory into the container
+    ports:
+      - "5173:5173"
+    depends_on:
+      - backend
+      - database
+    networks:
+      - app-network
+
+
+networks:
+  app-network:
