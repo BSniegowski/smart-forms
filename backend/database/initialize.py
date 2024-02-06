@@ -1,10 +1,11 @@
 from sqlmodel import SQLModel, create_engine
-from backend.models.machineTable import Machine
+import os
 
 
 def initialize_database():
+    db_url = os.environ.get("DATABASE_URL", "No database url found in env")
     # Create the database engine
-    engine = create_engine("sqlite:///./database.db")
+    engine = create_engine(db_url)
 
     # Create the tables
     SQLModel.metadata.create_all(engine)

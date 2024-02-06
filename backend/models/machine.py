@@ -1,7 +1,11 @@
-from itertools import count
-from pydantic import BaseModel, Field, EmailStr, constr
+from pydantic import BaseModel, EmailStr, constr
 from datetime import datetime
 from enum import Enum
+
+
+class Method(Enum):
+    CREATE = "create"
+    UPDATE = "update"
 
 
 class MachineStatus(str, Enum):

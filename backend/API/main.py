@@ -2,13 +2,12 @@ import datetime
 import sqlalchemy.exc
 from fastapi import FastAPI, Body, Query, HTTPException
 from pydantic import ValidationError, EmailStr
-from backend.models.machine import MachineCreate, MachineRead, MachineUpdate
-from sqlmodel import Session, create_engine, select
+from backend.models.machine import MachineCreate, MachineRead, MachineUpdate, Method
+from sqlmodel import Session, create_engine, select, SQLModel
 from backend.models.machineTable import Machine
 from fastapi.middleware.cors import CORSMiddleware
-import json
 import jsonref
-
+import os
 
 app = FastAPI()
 
@@ -25,7 +24,14 @@ app.add_middleware(
     allow_headers=["*"],
 )
 
-engine = create_engine("sqlite:///../database/database.db")
+db_url = os.environ.get("DATABASE_URL", "No database url found in env")
+engine = create_engine(db_url)
+
+
+@app.on_event("startup")
+def startup_event():
+    # Create the tables
+    SQLModel.metadata.create_all(engine)
 
 
 @app.on_event("shutdown")
@@ -100,15 +106,15 @@ def update_machine(machine_id: int = Query(..., description="The id of the machi
 
 
 @app.get('/machine/schema/{method}')
-def get_machine_schema(method: str):
+def get_machine_schema(method: Method):
     # to be updated when using Pydantic v2 (currently incompatible with SQLModel)
     # jsonref.replace_refs() can be used to resolve MachineStatus
-    if method == "create":
+    if method == Method.CREATE:
         schema = MachineCreate.schema()
-    elif method == "update":
+    elif method == Method.UPDATE:
         schema = MachineUpdate.schema()
     else:
-        return {"message": "Invalid method"}
+        raise HTTPException(status_code=422, detail="Invalid method")
 
     return jsonref.JsonRef.replace_refs(schema)
 

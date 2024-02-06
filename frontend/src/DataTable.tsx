@@ -73,7 +73,7 @@ function DataTable(props: { dataType: string }) {
           <TableHead>
             <TableRow>
               {/*using first row to determine attributes*/}
-              {Object.keys(tableData[0]).map((attribute: string) =>
+              {Object.keys(tableData[0] ?? {}).map((attribute: string) =>
                 <StyledTableCell key={attribute}>{attribute}</StyledTableCell>)}
               <StyledTableCell>Edit</StyledTableCell>
             </TableRow>
