@@ -36,7 +36,7 @@ services:
       context: ./frontend  # Path to your frontend directory
       dockerfile: Dockerfile
     environment:
-      - BACKEND_BASE_URL=http://backend:8000
+      - VITE_BACKEND_BASE_URL=http://backend:8000
     command: npm run dev
 #      - npm install
 #    volumes:

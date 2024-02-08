@@ -1,1 +1,1 @@
-export const BACKEND_BASE_URL: string = "http://localhost:8000" // process.env.BACKEND_BASE_URL || "http://localhost:8000"
+export const BACKEND_BASE_URL: string = import.meta.env.VITE_BACKEND_BASE_URL || "http://localhost:8000" // Vite sends to client side only env variables that start with "VITE"

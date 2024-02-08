@@ -11,9 +11,12 @@ import os
 
 app = FastAPI()
 
+FRONTEND_BASE_URL = os.environ.get("FRONTEND_BASE_URL")
+
 origins = [
     "http://localhost",
     "http://localhost:5173",
+    FRONTEND_BASE_URL,
 ]
 
 app.add_middleware(
@@ -42,7 +45,7 @@ def shutdown_event():
 
 @app.get("/")
 def root():
-    return {"message": "home"}
+    return {"message": "home", "FRONTEND_BASE_URL": FRONTEND_BASE_URL}
 
 
 @app.post('/machine/create')
