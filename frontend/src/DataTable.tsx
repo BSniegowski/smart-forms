@@ -24,6 +24,7 @@ function DataTable(props: { dataType: string }) {
   const [rawData, setRawData] = useState()
 
   useEffect(() => {
+    console.log("BACKEND_BASE_URL:", BACKEND_BASE_URL)
     fetch(`${BACKEND_BASE_URL}/${props.dataType}/get`)
       .then(response => response.json())
       .then(data => {
