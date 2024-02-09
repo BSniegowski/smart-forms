@@ -1,0 +1,58 @@
+# Default values for smart-forms.
+# This is a YAML-formatted file.
+# Declare variables to be passed into your templates.
+
+replicaCount: 1
+
+image:
+  pullPolicy: IfNotPresent
+  # Overrides the image tag whose default is the chart appVersion.
+  tag: "latest"
+
+imagePullSecrets: []
+nameOverride: ""
+fullnameOverride: ""
+
+serviceAccount:
+  # Specifies whether a service account should be created
+  create: true
+  # Automatically mount a ServiceAccount's API credentials?
+  automount: true
+  # Annotations to add to the service account
+  annotations: {}
+  # The name of the service account to use.
+  # If not set and create is true, a name is generated using the fullname template
+  name: ""
+
+
+backend:
+  port: 8000
+  targetPort: 8000
+  nodePort: 30001
+  imageName: smart-forms-backend
+  imagePullPolicy: Never
+
+database:
+  port: 5432
+  imageName: postgres
+
+frontend:
+  port: 5173
+  targetPort: 5173
+  nodePort: 30547
+  imageName: smart-forms-frontend
+  imagePullPolicy: Never
+
+env:
+  MINIKUBE_IP: "http://192.168.64.2"
+  DATABASE_URL: "postgresql://postgres:postgres@database:5432/smart-forms"
+  POSTGRES_DB: "smart-forms"
+  POSTGRES_USER: "postgres"
+  POSTGRES_PASSWORD: "postgres"
+
+autoscaling:
+  enabled: false
+  minReplicas: 1
+  maxReplicas: 100
+  targetCPUUtilizationPercentage: 80
+  # targetMemoryUtilizationPercentage: 80
