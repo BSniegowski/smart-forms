@@ -16,12 +16,9 @@ services:
     environment:
       - DATABASE_URL=postgresql://postgres:postgres@database:5432/smart-forms
     build:
-#      dockerfile: Dockerfile
       context: ./backend
-    command: uvicorn backend.API.main:app --host 0.0.0.0 --port 8000
+    command: uvicorn API.main:app --host 0.0.0.0 --port 8000
 #    command: ["sh", "-c", "while true; do sleep 3600; done"]
-#    volumes:
-#      - ./backend:/app  # Mount the backend directory into the container
     ports:
       - "8000:8000"
     depends_on:
@@ -33,14 +30,11 @@ services:
 
   frontend:
     build:
-      context: ./frontend  # Path to your frontend directory
+      context: ./frontend
       dockerfile: Dockerfile
     environment:
-      - VITE_BACKEND_BASE_URL=http://backend:8000
+      - VITE_BACKEND_BASE_URL=http://localhost:8000
     command: npm run dev
-#      - npm install
-#    volumes:
-#      - ../frontend:/app  # Mount the frontend directory into the container
     ports:
       - "5173:5173"
     depends_on:

@@ -1,7 +1,10 @@
 import datetime
+import sys
 import sqlalchemy.exc
 from fastapi import FastAPI, Body, Query, HTTPException
 from pydantic import ValidationError, EmailStr
+
+sys.path.append('..')
 from backend.models.machine import MachineCreate, MachineRead, MachineUpdate, Method
 from sqlmodel import Session, create_engine, select, SQLModel
 from backend.models.machineTable import Machine
@@ -27,7 +30,7 @@ app.add_middleware(
     allow_headers=["*"],
 )
 
-db_url = os.environ.get("DATABASE_URL", "No database url found in env")
+db_url = os.environ.get("DATABASE_URL", "postgresql://postgres:postgres@localhost:5432")
 engine = create_engine(db_url)
 
 
